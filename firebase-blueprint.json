@@ -1,0 +1,83 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Public and private user data",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "username": { "type": "string" },
+        "name": { "type": "string" },
+        "bio": { "type": "string" },
+        "pfp": { "type": "string" },
+        "themeColor": { "type": "string" },
+        "isDarkMode": { "type": "boolean" },
+        "customCSS": { "type": "string" },
+        "following": { "type": "array", "items": { "type": "string" } },
+        "followers": { "type": "array", "items": { "type": "string" } },
+        "bookmarks": { "type": "array", "items": { "type": "string" } },
+        "savedPosts": { "type": "array", "items": { "type": "string" } },
+        "blockedUsers": { "type": "array", "items": { "type": "string" } },
+        "chatWallpapers": { "type": "object" }
+      },
+      "required": ["id", "username", "name"]
+    },
+    "Post": {
+      "title": "Post",
+      "description": "Music or Note post",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "username": { "type": "string" },
+        "displayName": { "type": "string" },
+        "userPfp": { "type": "string" },
+        "music": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "artist": { "type": "string" },
+            "artwork": { "type": "string" },
+            "url": { "type": "string" }
+          }
+        },
+        "caption": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "likes": { "type": "array", "items": { "type": "string" } },
+        "type": { "type": "string", "enum": ["music", "notes"] }
+      },
+      "required": ["id", "userId", "caption", "timestamp"]
+    },
+    "Message": {
+      "title": "Private Message",
+      "description": "One-to-one message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "text": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderId", "receiverId", "text", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "/posts/{postId}": {
+      "schema": "Post",
+      "description": "Global feed posts"
+    },
+    "/posts/{postId}/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Comments on a post"
+    },
+    "/chats/{chatId}/messages/{messageId}": {
+      "schema": "Message",
+      "description": "Direct messages in a chat thread"
+    }
+  }
+}

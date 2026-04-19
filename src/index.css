@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,400;1,700;1,900&family=JetBrains+Mono:wght@300&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  --color-accent: var(--accent-color, #ec4899);
+  
+  --color-background: var(--bg-color, #ffffff);
+  --color-foreground: var(--text-color, #111111);
+}
+
+:root {
+  --accent-color: #ec4899;
+  --bg-color: #ffffff;
+  --text-color: #111111;
+}
+
+.theme-white {
+  --accent-color: #000000;
+  --bg-color: #ffffff;
+  --text-color: #000000;
+}
+
+.theme-black {
+  --accent-color: #ffffff;
+  --bg-color: #000000;
+  --text-color: #ffffff;
+}
+
+body {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-serif-italic {
+  font-family: var(--font-serif);
+  font-style: italic;
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    @apply transition-colors duration-300;
+  }
+  
+  .dark body {
+    background-color: var(--bg-color, #0f0f0f);
+    color: var(--text-color, #f3f4f6);
+  }
+}
+
+.glass-nav {
+  @apply sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-black/5 transition-all;
+}
+
+.dark .glass-nav {
+  @apply bg-black/80 border-white/5;
+}
+
+/* Custom CSS entry point for user profiles */
+#user-custom-css {
+  display: none;
+}
+
+/* Scrollbar styling for that clean look */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-200 dark:bg-white/10 rounded-full hover:bg-accent transition-colors;
+}
