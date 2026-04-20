@@ -6,94 +6,29 @@ export const MOCK_POSTS: Post[] = [
   {
     id: 'p1',
     userId: 'zain_dev',
-    user: { name: 'Zain', username: 'zain', pfp: 'https://picsum.photos/seed/zain/200' },
-    type: 'music',
-    music: {
-      id: 'm1',
-      name: 'Vignette',
-      artist: 'Archiver',
-      artwork: 'https://picsum.photos/seed/music1/600',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      source: 'spotify'
-    },
-    caption: 'Welcome to the path. This is a space for the echoes we leave behind. I created this for the ones who find meaning in the digital static.',
-    timestamp: new Date().toISOString(),
-    likes: ['adnan_user'],
-    mentions: [],
-    images: [],
-    visibility: 'public',
-    comments: [
-      { id: 'c1', userId: 'adnan_user', userName: 'Adnan', text: 'This frequency feels right.', timestamp: new Date().toISOString(), replies: [] }
-    ]
-  },
-  {
-    id: 'p2',
-    userId: 'adnan_user',
-    user: { name: 'Adnan', username: 'adnan', pfp: 'https://picsum.photos/seed/adnan/200' },
+    user: { name: 'Zain', username: 'zain', pfp: 'https://share.google/HBKMyI3cIf8QFewZs' },
     type: 'image',
-    images: ['https://picsum.photos/seed/adnan_post/800/800'],
-    caption: 'Found this while exploring the outskirts of the archive. @zain check this out.',
+    images: ['https://share.google/MPAAzOEFsGBfblKc5'],
+    caption: 'Hi, so this is Amon.',
     timestamp: new Date(Date.now() - 3600000).toISOString(),
-    likes: ['zain_dev'],
-    mentions: ['zain'],
+    likes: [],
+    mentions: [],
     visibility: 'public',
     comments: []
   },
   {
-    id: 'p3',
-    userId: 'music_bot',
-    user: { name: 'Rhythm Engine', username: 'rhythm', pfp: 'https://picsum.photos/seed/rhythm/200' },
-    type: 'music',
-    music: {
-      id: 'm_sp1',
-      name: 'After Hours',
-      artist: 'The Weeknd',
-      artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      source: 'spotify'
-    },
-    caption: 'Curating the night frequencies. New addition to the global archive.',
-    timestamp: new Date(Date.now() - 7200000).toISOString(),
+    id: 'p2',
+    userId: 'zain_dev',
+    user: { name: 'Zain', username: 'zain', pfp: 'https://share.google/HBKMyI3cIf8QFewZs' },
+    type: 'notes',
+    caption: 'Halo?',
+    timestamp: new Date(Date.now() - 86400000).toISOString(),
     likes: [],
     mentions: [],
     images: [],
     visibility: 'public',
     comments: []
-  },
   {
-    id: 'p4',
-    userId: 'zain_dev',
-    user: { name: 'Zain', username: 'zain', pfp: 'https://picsum.photos/seed/zain/200' },
-    type: 'notes',
-    caption: 'Digital minimalism is not about owning less, but about letting the noise fade so the silence can speak.',
-    timestamp: new Date(Date.now() - 86400000).toISOString(),
-    likes: ['adnan_user', 'music_bot'],
-    mentions: [],
-    images: [],
-    visibility: 'public',
-    comments: []
-  },
-  {
-    id: 'p5',
-    userId: 'adnan_user',
-    user: { name: 'Adnan', username: 'adnan', pfp: 'https://picsum.photos/seed/adnan/200' },
-    type: 'music',
-    music: {
-      id: 'm_yt1',
-      name: 'Lo-Fi Chill Hop',
-      artist: 'Lofi Girl',
-      artwork: 'https://picsum.photos/seed/lofi_yt/400',
-      url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-      source: 'youtube'
-    },
-    caption: 'The perfect companion for a quiet digital exploration.',
-    timestamp: new Date(Date.now() - 172800000).toISOString(),
-    likes: ['zain_dev'],
-    mentions: [],
-    images: [],
-    visibility: 'public',
-    comments: []
-  }
 ];
 
 interface PostContextType {
