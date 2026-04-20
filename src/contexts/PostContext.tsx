@@ -254,13 +254,19 @@ export function PostProvider({ children }: { children: React.ReactNode }) {
     const updated = posts.filter(p => p.id !== postId);
     persistPosts(updated);
     addActivity('delete', 'Removed a shared frequency from the archive');
+    return true;
   };
 
   const reportPost = async (postId: string) => {
     const post = posts.find(p => p.id === postId);
     if (!post) return;
+    
+    // In a real app, we'd flag it. In this prototype, let's hide it from the reporter
+    const updated = posts.filter(p => p.id !== postId);
+    persistPosts(updated);
+    
     addActivity('report', `Reported post ${post.id} for spectral evaluation`);
-    alert("Frequency reported. Our architects will evaluate this signal.");
+    alert("Frequency reported. Our architects will evaluate this signal and it has been hidden from your path.");
   };
 
   return (

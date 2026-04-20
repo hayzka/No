@@ -16,7 +16,7 @@ import Notifications from './pages/Notifications';
 import Navbar from './components/Navbar';
 import AuthPage from './pages/AuthPage';
 import GlobalPlayer from './components/GlobalPlayer';
-import { Bell, Plus, Search } from 'lucide-react';
+import { Bell, Plus, Search, Settings as SettingsIcon } from 'lucide-react';
 import { PostProvider } from './contexts/PostContext';
 import CreatePostModal from './components/CreatePostModal';
 import { useState, useEffect } from 'react';
@@ -37,6 +37,9 @@ function AppContent() {
       
       document.documentElement.classList.toggle('theme-white', isWhite);
       document.documentElement.classList.toggle('theme-black', isBlack);
+      
+      // Handle Font Size
+      document.documentElement.style.fontSize = `${user.fontSize || 15}px`;
 
       // Handle Font
       const fonts = ['serif', 'sans', 'mono', 'modern'];
@@ -84,6 +87,9 @@ function AppContent() {
             <Link to="/notifications" className="text-gray-400 hover:text-accent transition-colors relative">
                <Bell size={22} />
                <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full border-2 border-white dark:border-black" />
+            </Link>
+            <Link to="/settings" className="text-gray-400 hover:text-accent transition-colors">
+               <SettingsIcon size={22} />
             </Link>
             <Link to={user ? `/profile/${user.username}` : '/settings'}>
               <div className="w-9 h-9 rounded-full bg-gray-100 dark:bg-[#1a1a1a] overflow-hidden border border-black/5 dark:border-white/10 p-0.5">

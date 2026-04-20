@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MessageSquare, Send, ArrowLeft, Image as ImageIcon, X, User, Bookmark, Download } from 'lucide-react';
+import { MessageSquare, Send, ArrowLeft, Image as ImageIcon, X, User, Bookmark, Download, Settings as SettingsIcon, Trash } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
@@ -21,6 +21,7 @@ export default function Chat() {
   const [selectedChatUser, setSelectedChatUser] = useState<string | null>(initialChatId);
   const [message, setMessage] = useState('');
   const [history, setHistory] = useState<ChatMessage[]>([]);
+  const [showChatSettings, setShowChatSettings] = useState(false);
 
   // Find users for the chat list - everyone except the current user
   const contacts = allUsers.filter(u => u.username !== user?.username);
@@ -55,6 +56,17 @@ export default function Chat() {
     
     setHistory(prev => [...prev, newMsg]);
     setMessage('');
+
+    // Simulated response from the archive
+    setTimeout(async () => {
+      const response: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        senderId: selectedChatUser || 'echo',
+        text: "Frequency received and archived in the spectral stream. Your signal is being processed.",
+        timestamp: 'Just now'
+      };
+      setHistory(prev => [...prev, response]);
+    }, 2000);
 
     // Update recent interactions
     if (user && selectedChatUser) {
@@ -138,12 +150,71 @@ export default function Chat() {
               </div>
             </div>
           </div>
-          <button 
-            onClick={handleSetWallpaper}
-            className="p-3 text-gray-400 hover:text-accent transition-colors bg-gray-50 dark:bg-white/5 rounded-2xl"
-          >
-            <ImageIcon size={18} />
-          </button>
+          <div className="relative">
+            <button 
+              onClick={() => setShowChatSettings(!showChatSettings)}
+              className={cn(
+                "p-3 rounded-2xl transition-all duration-300",
+                showChatSettings ? "bg-accent text-white shadow-lg" : "text-gray-400 hover:text-accent bg-gray-50 dark:bg-white/5"
+              )}
+            >
+              <SettingsIcon size={18} />
+            </button>
+
+            <AnimatePresence>
+               {showChatSettings && (
+                 <motion.div 
+                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                   animate={{ opacity: 1, y: 0, scale: 1 }}
+                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                   className="absolute right-0 mt-3 w-64 bg-white dark:bg-[#1a1a1a] rounded-3xl shadow-huge border border-black/5 dark:border-white/10 overflow-hidden z-50 py-3"
+                 >
+                    <button 
+                      onClick={() => {
+                        handleSetWallpaper();
+                        setShowChatSettings(false);
+                      }}
+                      className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
+                    >
+                      <ImageIcon size={18} className="text-accent" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold">Theme Spectrum</span>
+                        <span className="text-[9px] text-gray-400 uppercase tracking-widest leading-none mt-1">Change Wallpaper</span>
+                      </div>
+                    </button>
+
+                    <button 
+                      onClick={() => {
+                        if (confirm("Permanently erase this frequency history?")) {
+                          setHistory([]);
+                          setShowChatSettings(false);
+                        }
+                      }}
+                      className="w-full flex items-center gap-4 px-6 py-4 hover:bg-red-500/10 transition-colors text-left group"
+                    >
+                      <Trash size={18} className="text-gray-400 group-hover:text-red-500" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold group-hover:text-red-500 transition-colors">Archive Purge</span>
+                        <span className="text-[9px] text-gray-400 uppercase tracking-widest leading-none mt-1">Clear conversations</span>
+                      </div>
+                    </button>
+                    
+                    <div className="h-px bg-black/5 dark:bg-white/5 my-2 mx-4" />
+                    
+                    <button 
+                      onClick={() => navigate(`/profile/${chatUserObj.username}`)}
+                      className="w-full flex items-center gap-4 px-6 py-4 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-left"
+                    >
+                      <User size={18} className="text-gray-400" />
+                      <div className="flex flex-col">
+                        <span className="text-[13px] font-bold">View Identity</span>
+                        <span className="text-[9px] text-gray-400 uppercase tracking-widest leading-none mt-1">See path details</span>
+                      </div>
+                    </button>
+                 </motion.div>
+               )}
+            </AnimatePresence>
+          </div>
         </header>
 
         <div 

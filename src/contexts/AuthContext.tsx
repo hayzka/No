@@ -20,6 +20,7 @@ export const MOCK_USERS: User[] = [
     savedMessages: [],
     blockedUsers: [],
     chatWallpapers: {},
+    fontSize: 15,
     activityLog: [
       { id: 'act1', type: 'system', detail: 'Identity stabilized in the archive.', timestamp: new Date().toISOString() }
     ],
@@ -43,6 +44,7 @@ export const MOCK_USERS: User[] = [
     savedMessages: [],
     blockedUsers: [],
     chatWallpapers: {},
+    fontSize: 15,
     activityLog: [],
     notifications: [],
   },
@@ -64,38 +66,32 @@ export const MOCK_USERS: User[] = [
     savedMessages: [],
     blockedUsers: [],
     chatWallpapers: {},
+    fontSize: 15,
     activityLog: [],
     notifications: [],
   }
 ];
 
 export const GLOBAL_MUSIC_LIBRARY: Track[] = [
-  // Spotify / Modern
+  // Pop / Modern
+  { id: 'm_ap1', name: 'good 4 u', artist: 'Olivia Rodrigo', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/66/69/ab/6669abaa-6d63-7186-0744-8822005e5572/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/66/69/ab/6669abaa-6d63-7186-0744-8822005e5572/mzaf_13410.m4a', source: 'spotify' },
+  { id: 'm_sp1', name: 'Blinding Lights', artist: 'The Weeknd', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/mzaf_13410.m4a', source: 'spotify' },
+  { id: 'm_ap2', name: 'Kiss Me More', artist: 'Doja Cat', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/2c/31/39/2c313936-a579-9945-8422-005e55722020/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/2c/31/39/2c313936-a579-9945-8422-005e55722020/mzaf_13410.m4a', source: 'apple' },
+  { id: 'm_ap3', name: 'Stay', artist: 'The Kid LAROI', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6c/2d/19/6c2d1948-4e8c-8a9d-16f5-cd28c5a93540/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/6c/2d/19/6c2d1948-4e8c-8a9d-16f5-cd28c5a93540/mzaf_13410.m4a', source: 'itunes' },
+  { id: 'm_ap4', name: 'Montero', artist: 'Lil Nas X', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/05/20/7a/05207ae4-8d96-0371-d8a4-0e7741d408eb/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/05/20/7a/05207ae4-8d96-0371-d8a4-0e7741d408eb/mzaf_13410.m4a', source: 'spotify' },
+  
+  // YouTube / Lo-Fi
+  { id: 'm_yt1', name: 'lofi hip hop radio', artist: 'Lofi Girl', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/e1/e1/e1/e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
+  { id: 'm_yt2', name: 'Synthwave Night', artist: 'Retro Wave', artwork: 'https://picsum.photos/seed/retro_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
+
+  // Classics
+  { id: 'm_it1', name: 'Bohemian Rhapsody', artist: 'Queen', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/c6/c6/c6/c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/c6/c6/c6/c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6/mzaf_13410.m4a', source: 'itunes' },
+  { id: 'm_it2', name: 'Imagine', artist: 'John Lennon', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/d6/d6/d6/d6d6d6d6-d6d6-d6d6-d6d6-d6d6d6d6d6d6/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/d6/d6/d6/d6d6d6d6-d6d6-d6d6-d6d6-d6d6d6d6d6d6/mzaf_13410.m4a', source: 'itunes' },
+
+  // Path Originals
   { id: 't1', name: 'Evergreen', artist: 'Rhythms', artwork: 'https://picsum.photos/seed/music1/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
   { id: 't2', name: 'Neon Dreams', artist: 'Cyber', artwork: 'https://picsum.photos/seed/music2/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'spotify' },
   { id: 't3', name: 'Solace', artist: 'Luna', artwork: 'https://picsum.photos/seed/music3/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'spotify' },
-  { id: 'm_sp1', name: 'After Hours', artist: 'The Weeknd', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
-  { id: 'm_sp2', name: 'Futue Nostalgia', artist: 'Dua Lipa', artwork: 'https://picsum.photos/seed/dua/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'spotify' },
-
-  // YouTube / Alternative
-  { id: 't4', name: 'Vantage Point', artist: 'Aria', artwork: 'https://picsum.photos/seed/music4/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
-  { id: 't5', name: 'Midnight Train', artist: 'Echo', artwork: 'https://picsum.photos/seed/music5/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', source: 'youtube' },
-  { id: 't6', name: 'Vignette', artist: 'Archiver', artwork: 'https://picsum.photos/seed/music6/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', source: 'youtube' },
-  { id: 'm_yt1', name: 'Lo-Fi Chill Hop', artist: 'Lofi Girl', artwork: 'https://picsum.photos/seed/lofi_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
-  { id: 'm_yt2', name: 'Synthwave Night', artist: 'Retro Wave', artwork: 'https://picsum.photos/seed/retro_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
-
-  // iTunes / Classic
-  { id: 't7', name: 'Phase Shift', artist: 'Spectrum', artwork: 'https://picsum.photos/seed/music7/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'itunes' },
-  { id: 't8', name: 'Afterlight Bloom', artist: 'Bloom', artwork: 'https://picsum.photos/seed/music8/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', source: 'itunes' },
-  { id: 't14', name: 'Imperial Sky', artist: 'Dynasty', artwork: 'https://picsum.photos/seed/music14/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3', source: 'itunes' },
-  { id: 'm_it1', name: 'Bohemian Rhapsody', artist: 'Queen', artwork: 'https://picsum.photos/seed/queen/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'itunes' },
-  { id: 'm_it2', name: 'Imagine', artist: 'John Lennon', artwork: 'https://picsum.photos/seed/lennon/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'itunes' },
-
-  // Apple Music / Trendy
-  { id: 't15', name: 'Gravity Wells', artist: 'Orion', artwork: 'https://picsum.photos/seed/music15/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3', source: 'apple' },
-  { id: 't16', name: 'Crystal Forest', artist: 'Zion', artwork: 'https://picsum.photos/seed/music16/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3', source: 'apple' },
-  { id: 'm_ap1', name: 'Drivers License', artist: 'Olivia Rodrigo', artwork: 'https://picsum.photos/seed/olivia/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'apple' },
-  { id: 'm_ap2', name: 'Kiss Me More', artist: 'Doja Cat', artwork: 'https://picsum.photos/seed/doja/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', source: 'apple' },
 ];
 
 interface AuthContextType {
@@ -160,6 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           savedMessages: parsedMe.savedMessages || [],
           blockedUsers: parsedMe.blockedUsers || [],
           chatWallpapers: parsedMe.chatWallpapers || {},
+          fontSize: parsedMe.fontSize || 15,
           activityLog: parsedMe.activityLog || [],
         };
         setUser(mySanitized);
@@ -211,6 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         savedMessages: [],
         blockedUsers: [],
         chatWallpapers: {},
+        fontSize: 15,
         activityLog: [],
         notifications: [],
       };

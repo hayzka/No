@@ -20,7 +20,7 @@ export default function Discover() {
     u.id !== currentUser?.id &&
     (u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
      u.username.toLowerCase().includes(searchQuery.toLowerCase()))
-  ).slice(0, 5);
+  );
 
   const filteredPosts = posts.filter(p => 
     p.caption.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -36,6 +36,8 @@ export default function Discover() {
   const suggestedUsers = allUsers
     .filter(u => u.id !== currentUser?.id && !currentUser?.following.includes(u.id))
     .slice(0, 3);
+
+  const showResults = searchQuery.trim() !== '' || activeTab !== 'all';
 
   return (
     <div className="pt-12 space-y-16 pb-32">
@@ -78,7 +80,7 @@ export default function Discover() {
         </div>
       </header>
 
-      {!searchQuery ? (
+      {!showResults ? (
         <div className="space-y-16">
           {/* Trending Rhythms */}
           <section className="space-y-8">
@@ -87,7 +89,12 @@ export default function Discover() {
                 <Flame size={20} />
                 <h2 className="text-[11px] font-black uppercase tracking-[0.3em]">Resonating Now</h2>
               </div>
-              <button className="text-[9px] font-bold text-gray-400 uppercase tracking-widest hover:text-accent">View All</button>
+              <button 
+                onClick={() => setActiveTab('music')}
+                className="text-[9px] font-bold text-gray-400 uppercase tracking-widest hover:text-accent"
+              >
+                View Archive
+              </button>
             </div>
             
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -100,7 +107,13 @@ export default function Discover() {
                    className="group relative aspect-square rounded-[2rem] overflow-hidden bg-gray-100 dark:bg-white/5 cursor-pointer"
                    onClick={() => playTrack(track)}
                  >
+                {track.artwork ? (
                     <img src={track.artwork} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-accent/5 transition-transform duration-700 group-hover:scale-110">
+                      <Music size={24} className="text-accent" />
+                    </div>
+                )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-5">
                        <p className="text-[9px] font-black text-white/60 uppercase tracking-widest truncate">{track.artist}</p>
                        <h4 className="text-white font-bold text-xs truncate mb-1">{track.name}</h4>
@@ -126,7 +139,13 @@ export default function Discover() {
                  <div key={u.id} className="flex items-center justify-between p-5 bg-gray-50 dark:bg-white/5 rounded-3xl border border-black/5 dark:border-white/5">
                     <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate(`/profile/${u.username}`)}>
                        <div className="w-12 h-12 rounded-2xl overflow-hidden border border-accent/20">
-                          <img src={u.pfp} className="w-full h-full object-cover" />
+                          {u.pfp ? (
+                            <img src={u.pfp} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-xs font-bold text-accent bg-accent/5">
+                              {u.name?.[0] || 'U'}
+                            </div>
+                          )}
                        </div>
                        <div>
                           <h4 className="text-sm font-bold tracking-tight">{u.name}</h4>
@@ -167,7 +186,15 @@ export default function Discover() {
                 {filteredUsers.map(u => (
                   <div key={u.id} className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/5 rounded-2xl cursor-pointer transition-colors" onClick={() => navigate(`/profile/${u.username}`)}>
                      <div className="flex items-center gap-4">
-                        <img src={u.pfp} className="w-10 h-10 rounded-xl object-cover" />
+                        <div className="w-10 h-10 rounded-xl overflow-hidden">
+                          {u.pfp ? (
+                            <img src={u.pfp} className="w-10 h-10 rounded-xl object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-accent bg-accent/5">
+                              {u.name?.[0] || 'U'}
+                            </div>
+                          )}
+                        </div>
                         <div>
                            <p className="text-sm font-bold tracking-tight">{u.name}</p>
                            <p className="text-[10px] text-gray-400 uppercase tracking-widest">@{u.username}</p>
@@ -190,7 +217,13 @@ export default function Discover() {
                        className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-white/5 hover:bg-gray-100 dark:hover:bg-white/10 rounded-2xl transition-colors text-left group"
                      >
                         <div className="relative w-12 h-12 rounded-xl overflow-hidden flex-shrink-0">
-                           <img src={track.artwork} className="w-full h-full object-cover" />
+                            {track.artwork ? (
+                               <img src={track.artwork} className="w-full h-full object-cover" />
+                            ) : (
+                               <div className="w-full h-full flex items-center justify-center bg-accent/5">
+                                 <Music size={16} className="text-accent" />
+                               </div>
+                            )}
                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                               <Play size={16} fill="white" className="text-white" />
                            </div>
@@ -212,7 +245,11 @@ export default function Discover() {
               <div className="space-y-8">
                  {filteredPosts.length > 0 && <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2">Frequencies Captured</h3>}
                  {filteredPosts.map((p) => (
-                   <div key={p.id}>
+                   <div 
+                     key={p.id}
+                     onClick={() => navigate(`/post/${p.id}`)}
+                     className="cursor-pointer"
+                   >
                      <PostCard post={p} />
                    </div>
                  ))}

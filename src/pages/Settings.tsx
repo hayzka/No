@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { motion } from 'motion/react';
-import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Moon, Sun, Palette as PaletteIcon, Code, LogOut, ChevronRight, User, ShieldX, Activity, Send } from 'lucide-react';
+import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Moon, Sun, Palette as PaletteIcon, Code, LogOut, ChevronRight, User, ShieldX, Activity, Send, Minus, Plus as PlusIcon, ShieldAlert, Upload } from 'lucide-react';
 import { formatDate, cn } from '../lib/utils';
 
 const COLORS = [
@@ -23,6 +24,21 @@ export default function Settings() {
   const [newBio, setNewBio] = useState(user?.bio || '');
   const [newPfp, setNewPfp] = useState(user?.pfp || '');
   const [newHeader, setNewHeader] = useState(user?.headerImage || '');
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>, setter: (val: string) => void) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        alert("This capture is too high-frequency (>2MB). Please optimize for the archive.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setter(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleToggleMode = () => {
     if (user) updateProfile({ isDarkMode: !user.isDarkMode });
@@ -133,21 +149,45 @@ export default function Settings() {
               </div>
               <div className="space-y-1.5">
                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Visual Signal URL (PFP)</label>
-                 <input 
-                   type="text"
-                   value={newPfp}
-                   onChange={(e) => setNewPfp(e.target.value)}
-                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
-                 />
+                 <div className="flex gap-2">
+                     <input 
+                       type="text"
+                       placeholder="Identity URL..."
+                       value={newPfp}
+                       onChange={(e) => setNewPfp(e.target.value)}
+                       className="flex-1 bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                     />
+                     <label className="w-12 h-12 bg-accent text-white rounded-2xl flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform shadow-md">
+                        <Upload size={18} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => handleFileSelect(e, setNewPfp)} 
+                        />
+                     </label>
+                  </div>
               </div>
               <div className="space-y-1.5">
                  <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Header Spectrum URL</label>
-                 <input 
-                   type="text"
-                   value={newHeader}
-                   onChange={(e) => setNewHeader(e.target.value)}
-                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
-                 />
+                 <div className="flex gap-2">
+                     <input 
+                       type="text"
+                       placeholder="Header URL..."
+                       value={newHeader}
+                       onChange={(e) => setNewHeader(e.target.value)}
+                       className="flex-1 bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                     />
+                     <label className="w-12 h-12 bg-accent text-white rounded-2xl flex items-center justify-center cursor-pointer hover:scale-105 active:scale-95 transition-transform shadow-md">
+                        <Upload size={18} />
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          className="hidden" 
+                          onChange={(e) => handleFileSelect(e, setNewHeader)} 
+                        />
+                     </label>
+                  </div>
               </div>
               <button 
                 onClick={handleUpdateIdentity}
@@ -201,6 +241,46 @@ export default function Settings() {
             </div>
           </div>
 
+          <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4 text-gray-500">
+                <Minus size={18} />
+                <span className="text-[13px] font-bold tracking-tight text-gray-900 dark:text-gray-100">Typography Scale</span>
+              </div>
+              <span className="text-[11px] font-black uppercase text-accent tracking-widest">{user?.fontSize || 15}px</span>
+            </div>
+            
+            <div className="flex items-center gap-6">
+               <button 
+                 onClick={() => user && updateProfile({ fontSize: Math.max(12, (user.fontSize || 15) - 1) })}
+                 className="w-12 h-12 rounded-2xl bg-white dark:bg-black/20 flex items-center justify-center text-gray-400 hover:text-accent shadow-sm"
+               >
+                 <Minus size={16} />
+               </button>
+               <input 
+                 type="range"
+                 min="12"
+                 max="22"
+                 step="1"
+                 value={user?.fontSize || 15}
+                 onChange={(e) => updateProfile({ fontSize: parseInt(e.target.value) })}
+                 className="flex-1 accent-accent h-1.5 bg-gray-200 dark:bg-white/10 rounded-full appearance-none cursor-pointer"
+               />
+               <button 
+                 onClick={() => user && updateProfile({ fontSize: Math.min(22, (user.fontSize || 15) + 1) })}
+                 className="w-12 h-12 rounded-2xl bg-white dark:bg-black/20 flex items-center justify-center text-gray-400 hover:text-accent shadow-sm"
+               >
+                 <PlusIcon size={16} />
+               </button>
+            </div>
+            
+            <div className="p-6 bg-white dark:bg-black/20 rounded-2xl border border-black/5 dark:border-white/5">
+               <p className="text-gray-500 italic opacity-60 leading-relaxed text-center" style={{ fontSize: `${user?.fontSize || 15}px` }}>
+                 The frequency of your thoughts should resonate at a scale that feels right to your archive.
+               </p>
+            </div>
+          </div>
+
           <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6">
             <div className="flex items-center gap-4 text-gray-500">
               <Code size={20} />
@@ -245,12 +325,12 @@ export default function Settings() {
                      <p className="text-[13px] leading-relaxed mb-4">{msg.text}</p>
                      <div className="flex items-center justify-between">
                         <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Saved Transmission</span>
-                        <a 
-                          href={`/chat?user=${allUsers.find(u => u.id === msg.senderId)?.username}`}
+                        <Link 
+                          to={`/chat?user=${allUsers.find(u => u.id === msg.senderId)?.username}`}
                           className="text-[9px] text-accent font-black uppercase tracking-widest"
                         >
                           Jump to Signal
-                        </a>
+                        </Link>
                      </div>
                   </div>
                 ))}
@@ -318,6 +398,26 @@ export default function Settings() {
                <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center py-4">No blocked entities in your path.</p>
              )}
           </div>
+
+          <button 
+            onClick={() => {
+              if (confirm("This will permanently purge your local activity, posts, and saved ciphers. Continue?")) {
+                localStorage.clear();
+                window.location.href = '/';
+              }
+            }}
+            className="flex items-center justify-between p-6 bg-red-50/30 dark:bg-red-900/10 rounded-[2rem] border border-red-500/10 group transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 rounded-2xl bg-white dark:bg-black/20 flex items-center justify-center text-red-500">
+                <ShieldAlert size={18} />
+              </div>
+              <div className="flex flex-col items-start text-left">
+                <span className="text-[13px] font-bold tracking-tight text-red-500">Purge Digital Archives</span>
+                <span className="text-[9px] text-red-500/60 font-bold uppercase tracking-widest leading-none mt-1">Reset all local resonance</span>
+              </div>
+            </div>
+          </button>
         </div>
       </section>
 

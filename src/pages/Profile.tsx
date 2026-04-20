@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePosts } from '../contexts/PostContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Image as ImageIcon, MoreHorizontal, ShieldAlert, ShieldX } from 'lucide-react';
+import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Image as ImageIcon, MoreHorizontal, ShieldAlert, ShieldX, Share2 } from 'lucide-react';
 import { formatDate, cn } from '../lib/utils';
 import PostCard from '../components/PostCard';
 
@@ -39,7 +39,7 @@ export default function Profile() {
   const otherPosts = userPosts.filter(p => p.type !== 'music').filter(p => p.caption.trim().length > 0 || (p.images && p.images.length > 0)); 
   const savedPosts = posts.filter(p => currentUser?.bookmarks?.includes(p.id) ?? false);
 
-  const isPrivateAndNoFollower = profileUser.isPrivateAccount && !isOwnProfile && !isFollowing;
+  const isPrivateAndNoFollower = profileUser?.isPrivateAccount && !isOwnProfile && !isFollowing;
 
   useEffect(() => {
     if (isOwnProfile && currentUser) {
@@ -148,10 +148,14 @@ export default function Profile() {
         <div className="flex gap-4">
           {isOwnProfile ? (
             <button 
-              onClick={() => setIsEditing(true)}
-              className="px-12 py-5 bg-accent text-white rounded-[2rem] text-[11px] font-extrabold uppercase tracking-[0.3em] shadow-2xl shadow-accent/30 hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300"
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Identity link preserved in your clipboard.");
+              }}
+              className="px-12 py-5 bg-accent text-white rounded-[2rem] text-[11px] font-extrabold uppercase tracking-[0.3em] shadow-2xl shadow-accent/30 hover:shadow-accent/40 hover:-translate-y-1 transition-all duration-300 flex items-center gap-3"
             >
-              Modify Identity
+              <Share2 size={16} />
+              Share Identity
             </button>
           ) : (
             <>
@@ -184,7 +188,7 @@ export default function Profile() {
           )}
           
           {!isOwnProfile && (
-            <div className="relative">
+            <div className="relative z-[60]">
                <button 
                 onClick={() => setShowSocialMenu(!showSocialMenu)}
                 className="p-5 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] text-gray-400 border border-black/5 dark:border-white/5 hover:text-accent transition-colors"
@@ -198,7 +202,7 @@ export default function Profile() {
                     initial={{ opacity: 0, scale: 0.95, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                    className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#121212] rounded-2xl shadow-huge border border-black/5 dark:border-white/5 z-20 py-2 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#121212] rounded-2xl shadow-huge border border-black/5 dark:border-white/5 z-[60] py-2 overflow-hidden"
                   >
                     <button 
                       onClick={() => {
@@ -398,7 +402,13 @@ export default function Profile() {
                      >
                         <div className="flex items-center gap-4">
                            <div className="w-12 h-12 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 p-0.5">
-                              <img src={contact.pfp} className="w-full h-full object-cover rounded-[1.1rem]" referrerPolicy="no-referrer" />
+                              {contact.pfp ? (
+                                 <img src={contact.pfp} className="w-full h-full object-cover rounded-[1.1rem]" referrerPolicy="no-referrer" />
+                               ) : (
+                                 <div className="w-full h-full flex items-center justify-center text-[10px] font-bold text-accent bg-accent/5">
+                                   {contact.name?.[0] || 'U'}
+                                 </div>
+                               )}
                            </div>
                            <div className="flex flex-col">
                               <span className="text-[13px] font-bold tracking-tight">{contact.name}</span>
@@ -452,7 +462,13 @@ export default function Profile() {
                          className="flex items-center gap-6 p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] cursor-pointer hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
                        >
                           <div className="w-14 h-14 rounded-[1.5rem] overflow-hidden">
-                             <img src={u.pfp} className="w-full h-full object-cover" />
+                              {u.pfp ? (
+                                <img src={u.pfp} className="w-full h-full object-cover" />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-xs font-bold text-accent bg-accent/5">
+                                  {u.name?.[0] || 'U'}
+                                </div>
+                              )}
                           </div>
                           <div className="flex flex-col">
                              <span className="text-[14px] font-bold">{u.name}</span>

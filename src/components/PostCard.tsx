@@ -82,7 +82,10 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
       }
     } else if (action === 'delete') {
       if (confirm("Permanently erase this frequency?")) {
-        await deletePost(post.id);
+        const success = await deletePost(post.id);
+        if (success && isDetail) {
+          navigate('/');
+        }
       }
     } else if (action === 'share') {
       setShowShareModal(true);
@@ -274,7 +277,13 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
              className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg group-hover/music:scale-[1.05] transition-transform duration-500 cursor-pointer"
              onClick={(e) => { e.stopPropagation(); if (post.music) playTrack(post.music); }}
            >
-              <img src={post.music?.artwork} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              {post.music?.artwork ? (
+                <img src={post.music?.artwork} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-accent/5">
+                  <MusicIcon size={32} className="text-accent/40" />
+                </div>
+              )}
               <div className={cn(
                 "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity",
                 isCurrentPlaying && isPlaying ? "opacity-100" : "opacity-0 group-hover/music:opacity-100"
@@ -333,7 +342,9 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
         <div className="relative aspect-square rounded-[2.5rem] overflow-hidden bg-gray-50 dark:bg-[#1a1a1a] mb-10 shadow-2xl shadow-black/5 group-hover:scale-[1.01] transition-transform duration-700 cursor-pointer">
            <div className="w-full h-full flex transition-transform duration-500" style={{ transform: `translateX(-${activeImageIdx * 100}%)` }}>
               {post.images.map((img, i) => (
-                <img key={i} src={img} className="w-full h-full object-cover flex-shrink-0" referrerPolicy="no-referrer" />
+                img ? (
+                  <img key={i} src={img} className="w-full h-full object-cover flex-shrink-0" referrerPolicy="no-referrer" />
+                ) : null
               ))}
            </div>
            

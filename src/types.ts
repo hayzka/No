@@ -20,6 +20,7 @@ export interface User {
   savedMessages: Message[];
   blockedUsers: string[];
   chatWallpapers: Record<string, string>; 
+  fontSize: number;
   activityLog: { id: string; type: string; detail: string; timestamp: string }[];
   notifications: Notification[];
 }
