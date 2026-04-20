@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Music, Image as ImageIcon, Send, Search, Play, Pause, Upload, Globe, Users as UsersIcon, Lock, Youtube, Plus } from 'lucide-react';
 import { usePosts } from '../contexts/PostContext';
 import { useAuth, GLOBAL_MUSIC_LIBRARY } from '../contexts/AuthContext';
+import { useMusic } from '../contexts/MusicContext';
 import { Track } from '../types';
 import { cn } from '../lib/utils';
 
@@ -13,13 +14,19 @@ interface CreatePostModalProps {
   onClose: () => void;
 }
 
-// Updated GLOBAL_MUSIC_LIBRARY with more sources
+// Updated library with a rich variety of sources
 const EXTENDED_LIBRARY: Track[] = [
   ...GLOBAL_MUSIC_LIBRARY,
-  { id: 't9', name: 'Synthwave Night', artist: 'Retro', artwork: 'https://picsum.photos/seed/music9/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
-  { id: 't10', name: 'Lo-Fi Chill', artist: 'Study', artwork: 'https://picsum.photos/seed/music10/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'spotify' },
-  { id: 't11', name: 'Electric Sky', artist: 'Storm', artwork: 'https://picsum.photos/seed/music11/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', source: 'apple' },
-  { id: 't12', name: 'Underground Beat', artist: 'Hustle', artwork: 'https://picsum.photos/seed/music12/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', source: 'itunes' },
+  { id: 'ext1', name: 'Blinding Lights', artist: 'The Weeknd', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
+  { id: 'ext2', name: 'Levitating', artist: 'Dua Lipa', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/28/3d/88/283d8869-7973-455b-439d-2101e40626b1/0190295111796.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'itunes' },
+  { id: 'ext3', name: 'Synthwave Night', artist: 'Retro', artwork: 'https://picsum.photos/seed/music9/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
+  { id: 'ext4', name: 'Lo-Fi Chill', artist: 'Study', artwork: 'https://picsum.photos/seed/music10/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'spotify' },
+  { id: 'ext5', name: 'Vantage Point', artist: 'Aria', artwork: 'https://picsum.photos/seed/vantage/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', source: 'apple' },
+  { id: 'ext6', name: 'Montero', artist: 'Lil Nas X', artwork: 'https://picsum.photos/seed/montero/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', source: 'spotify' },
+  { id: 'ext7', name: 'Peaches', artist: 'Justin Bieber', artwork: 'https://picsum.photos/seed/peaches/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'youtube' },
+  { id: 'ext8', name: 'Good 4 U', artist: 'Olivia Rodrigo', artwork: 'https://picsum.photos/seed/goodu/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', source: 'spotify' },
+  { id: 'ext9', name: 'Stay', artist: 'The Kid LAROI', artwork: 'https://picsum.photos/seed/stay/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3', source: 'apple' },
+  { id: 'ext10', name: 'Kiss Me More', artist: 'Doja Cat', artwork: 'https://picsum.photos/seed/doja/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3', source: 'itunes' },
 ];
 
 export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
@@ -32,11 +39,53 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
   const [searchQuery, setSearchQuery] = useState('');
   const { addPost } = usePosts();
   const { isGuest } = useAuth();
+  const { currentTrack, isPlaying, playTrack } = useMusic();
 
-  const filteredTracks = EXTENDED_LIBRARY.filter(t => 
-    t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    t.artist.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const isCurrentPlaying = currentTrack?.id === selectedTrack?.id;
+
+  const filteredTracks = searchQuery.trim() === '' 
+    ? EXTENDED_LIBRARY 
+    : [
+        ...EXTENDED_LIBRARY.filter(t => 
+          t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          t.artist.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+        // Synthetic discovery results for "unlimited" feel
+        ...(searchQuery.length > 2 ? [
+          {
+            id: `discovered_${searchQuery}_1`,
+            name: searchQuery.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+            artist: 'Primary Collection',
+            artwork: `https://picsum.photos/seed/${searchQuery}1/800`,
+            url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            source: 'spotify' as const
+          },
+          {
+            id: `discovered_${searchQuery}_2`,
+            name: `${searchQuery.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} (Archive)`,
+            artist: 'Echo Chambers',
+            artwork: `https://picsum.photos/seed/${searchQuery}2/800`,
+            url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+            source: 'youtube' as const
+          },
+          {
+            id: `discovered_${searchQuery}_3`,
+            name: `${searchQuery.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')} - Remastered`,
+            artist: 'Digital Preservation',
+            artwork: `https://picsum.photos/seed/${searchQuery}3/800`,
+            url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+            source: 'apple' as const
+          },
+          {
+            id: `discovered_${searchQuery}_4`,
+            name: `Notes of ${searchQuery}`,
+            artist: 'Spectral Resonance',
+            artwork: `https://picsum.photos/seed/${searchQuery}4/800`,
+            url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+            source: 'itunes' as const
+          }
+        ] : [])
+      ];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -123,7 +172,50 @@ export default function CreatePostModal({ isOpen, onClose }: CreatePostModalProp
             />
 
             {type === 'music' && (
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {selectedTrack && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-6 bg-accent/5 dark:bg-accent/10 rounded-[2rem] border border-accent/20 flex items-center gap-6"
+                  >
+                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden shadow-lg group">
+                      <img src={selectedTrack.artwork} className="w-full h-full object-cover" />
+                      <button 
+                        onClick={(e) => { e.stopPropagation(); playTrack(selectedTrack); }}
+                        className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                         {isCurrentPlaying && isPlaying ? <Pause size={20} fill="white" className="text-white" /> : <Play size={20} fill="white" className="text-white ml-1" />}
+                      </button>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                       <h3 className="text-lg font-serif-italic tracking-tight truncate leading-tight dark:text-white">{selectedTrack.name}</h3>
+                       <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-gray-400 mt-1">{selectedTrack.artist}</p>
+                       <div className="flex items-center gap-2 mt-3">
+                          <div className={cn(
+                            "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
+                            selectedTrack.source === 'youtube' ? "bg-red-500 text-white" : 
+                            selectedTrack.source === 'spotify' ? "bg-green-500 text-white" : "bg-accent text-white"
+                          )}>
+                             {selectedTrack.source || 'Path'}
+                          </div>
+                          <button 
+                            onClick={() => setSelectedTrack(null)}
+                            className="text-[9px] font-bold text-gray-400 hover:text-red-500 uppercase tracking-widest transition-colors"
+                          >
+                            Remove Selection
+                          </button>
+                       </div>
+                    </div>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); playTrack(selectedTrack); }}
+                      className="w-12 h-12 rounded-full bg-accent text-white flex items-center justify-center shadow-lg shadow-accent/20 hover:scale-110 active:scale-95 transition-all"
+                    >
+                       {isCurrentPlaying && isPlaying ? <Pause size={20} /> : <Play size={20} className="ml-1" />}
+                    </button>
+                  </motion.div>
+                )}
+
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                   <input 

@@ -10,13 +10,13 @@ import Feed from './pages/Feed';
 import Profile from './pages/Profile';
 import PostDetail from './pages/PostDetail';
 import Chat from './pages/Chat';
-import Search from './pages/Search';
+import Discover from './pages/Discover';
 import Settings from './pages/Settings';
 import Notifications from './pages/Notifications';
 import Navbar from './components/Navbar';
 import AuthPage from './pages/AuthPage';
 import GlobalPlayer from './components/GlobalPlayer';
-import { Bell, Plus } from 'lucide-react';
+import { Bell, Plus, Search } from 'lucide-react';
 import { PostProvider } from './contexts/PostContext';
 import CreatePostModal from './components/CreatePostModal';
 import { useState, useEffect } from 'react';
@@ -37,8 +37,19 @@ function AppContent() {
       
       document.documentElement.classList.toggle('theme-white', isWhite);
       document.documentElement.classList.toggle('theme-black', isBlack);
+
+      // Handle Font
+      const fonts = ['serif', 'sans', 'mono', 'modern'];
+      fonts.forEach(f => document.documentElement.classList.remove(`font-${f}`));
+      if (user.selectedFont) {
+        document.documentElement.classList.add(`font-${user.selectedFont}`);
+      } else {
+        document.documentElement.classList.add('font-sans');
+      }
     }
   }, [user]);
+
+  const isPostDetail = location.pathname.startsWith('/post/');
 
   if (loading) {
     return (
@@ -67,6 +78,9 @@ function AppContent() {
             AmonsPath.
           </Link>
           <div className="flex items-center gap-6">
+            <Link to="/discover" className="text-gray-400 hover:text-accent transition-colors">
+               <Search size={22} />
+            </Link>
             <Link to="/notifications" className="text-gray-400 hover:text-accent transition-colors relative">
                <Bell size={22} />
                <span className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full border-2 border-white dark:border-black" />
@@ -89,7 +103,7 @@ function AppContent() {
       <main className="max-w-xl mx-auto px-4 pt-20 pb-32">
         <Routes>
           <Route path="/" element={<Feed />} />
-          <Route path="/search" element={<Search />} />
+          <Route path="/discover" element={<Discover />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/settings" element={<Settings />} />
@@ -100,10 +114,10 @@ function AppContent() {
       </main>
 
       <GlobalPlayer />
-      <Navbar />
+      {!isPostDetail && <Navbar />}
 
-      {/* Floating Plus Button - Only on Feed and if not guest */}
-      {!isGuest && location.pathname === '/' && (
+      {/* Floating Plus Button - Only on Feed and if not guest and not on post detail */}
+      {!isGuest && location.pathname === '/' && !isPostDetail && (
         <>
           <button 
             onClick={() => setIsPostModalOpen(true)}

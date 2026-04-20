@@ -3,17 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { usePosts } from '../contexts/PostContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Image as ImageIcon } from 'lucide-react';
+import { Settings as SettingsIcon, Grid, Music, Users, Bookmark, Palette, Camera, X, MessageCircle, Lock, Image as ImageIcon, MoreHorizontal, ShieldAlert, ShieldX } from 'lucide-react';
 import { formatDate, cn } from '../lib/utils';
 import PostCard from '../components/PostCard';
 
 const TABS = (isOwn: boolean) => [
   { id: 'music', label: 'Music', icon: Music },
   { id: 'notes', label: 'Notes', icon: Grid },
-  { id: 'playlists', label: 'Playlists', icon: Grid },
   { id: 'people', label: isOwn ? 'Myself' : 'Add People', icon: Users },
-  { id: 'saved', label: 'Saved', icon: Bookmark },
-  { id: 'history', label: 'Trace', icon: MessageCircle },
 ];
 
 const EmptyState = ({ icon: Icon, label }: { icon: any, label: string }) => (
@@ -25,11 +22,12 @@ const EmptyState = ({ icon: Icon, label }: { icon: any, label: string }) => (
 
 export default function Profile() {
   const { username } = useParams();
-  const { user: currentUser, allUsers, updateProfile, followUser, unfollowUser, isGuest } = useAuth();
+  const { user: currentUser, allUsers, updateProfile, followUser, unfollowUser, isGuest, blockUser } = useAuth();
   const { posts } = usePosts();
   const [activeTab, setActiveTab] = useState('music');
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ name: '', bio: '', pfp: '', headerImage: '' });
+  const [showSocialMenu, setShowSocialMenu] = useState(false);
   const navigate = useNavigate();
 
   const profileUser = allUsers.find(u => u.username?.toLowerCase() === username?.toLowerCase());
@@ -69,21 +67,6 @@ export default function Profile() {
     if (url !== null) setEditForm(prev => ({ ...prev, headerImage: url }));
   };
 
-  const handleCreatePlaylist = async () => {
-    if (!profileUser) return;
-    const name = prompt("Name your new sonorous playlist:");
-    if (name && isOwnProfile && currentUser) {
-      const newPlaylist = {
-        id: Date.now().toString(),
-        name,
-        tracks: [],
-        createdAt: new Date().toISOString(),
-        userId: currentUser.id
-      };
-      await updateProfile({ playlists: [...(currentUser.playlists || []), newPlaylist] });
-    }
-  };
-
   const handleSocialAction = async (action: () => Promise<void>) => {
     if (isGuest) {
       alert("Spectators cannot form connections. Create an identity to engage.");
@@ -100,8 +83,6 @@ export default function Profile() {
       </div>
     );
   }
-
-  const showPlaylists = username?.toLowerCase() === 'zain' || (isOwnProfile && (currentUser?.activityLog?.length ?? 0) > 0);
 
   return (
     <div className="pt-0 min-h-screen">
@@ -193,12 +174,58 @@ export default function Profile() {
               </button>
             </>
           )}
-          <button 
-            onClick={() => navigate('/settings')}
-            className="p-5 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] text-gray-400 border border-black/5 dark:border-white/5 hover:text-accent transition-colors"
-          >
-            <SettingsIcon size={22} />
-          </button>
+          {isOwnProfile && (
+            <button 
+              onClick={() => navigate('/settings')}
+              className="p-5 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] text-gray-400 border border-black/5 dark:border-white/5 hover:text-accent transition-colors"
+            >
+              <SettingsIcon size={22} />
+            </button>
+          )}
+          
+          {!isOwnProfile && (
+            <div className="relative">
+               <button 
+                onClick={() => setShowSocialMenu(!showSocialMenu)}
+                className="p-5 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] text-gray-400 border border-black/5 dark:border-white/5 hover:text-accent transition-colors"
+              >
+                <MoreHorizontal size={22} />
+              </button>
+              
+              <AnimatePresence>
+                {showSocialMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                    className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-[#121212] rounded-2xl shadow-huge border border-black/5 dark:border-white/5 z-20 py-2 overflow-hidden"
+                  >
+                    <button 
+                      onClick={() => {
+                        blockUser(profileUser.id);
+                        setShowSocialMenu(false);
+                        alert(`User @${profileUser.username} has been blocked.`);
+                      }}
+                      className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <ShieldX size={14} />
+                      Block Seeker
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setShowSocialMenu(false);
+                        alert(`Signal reported. The archive will be reviewed.`);
+                      }}
+                      className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-orange-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                    >
+                      <ShieldAlert size={14} />
+                      Report Spectrum
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
       </header>
 
@@ -299,7 +326,6 @@ export default function Profile() {
       {/* Tabs */}
       <div className="flex justify-between items-center mb-16 border-b border-black/5 dark:border-white/5 sticky top-20 bg-white/10 dark:bg-black/10 backdrop-blur-3xl z-30">
         {TABS(isOwnProfile).map((tab) => {
-          if (tab.id === 'playlists' && !showPlaylists) return null;
           const isActive = activeTab === tab.id;
           const Icon = tab.icon;
           return (
@@ -342,45 +368,7 @@ export default function Profile() {
               transition={{ duration: 0.2 }}
               className="grid grid-cols-1 gap-24 px-4"
             >
-              {activeTab === 'playlists' ? (
-                <div className="space-y-10">
-                  {isOwnProfile && (
-                    <button 
-                      onClick={handleCreatePlaylist}
-                      className="w-full p-10 bg-accent/5 dark:bg-accent/10 rounded-[3rem] border border-accent/20 border-dashed text-accent text-[11px] font-black uppercase tracking-[0.5em] hover:bg-accent/10 transition-colors mb-10"
-                    >
-                      + Crystallize New Playlist
-                    </button>
-                  )}
-                  {(profileUser.playlists?.length ?? 0) > 0 ? (
-                    profileUser.playlists?.map(playlist => (
-                      <div key={playlist.id} className="p-10 bg-gray-50 dark:bg-[#1a1a1a] rounded-[3rem] border border-black/5 dark:border-white/5 group hover:scale-[1.02] transition-all cursor-pointer shadow-huge">
-                        <div className="flex justify-between items-start mb-8">
-                          <div className="flex flex-col">
-                            <h4 className="font-serif-italic text-4xl tracking-tighter">{playlist.name}</h4>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-widest mt-2 font-bold">{playlist.tracks?.length ?? 0} frequencies · Recorded {formatDate(playlist.createdAt)}</p>
-                          </div>
-                          <button className="bg-accent text-white px-8 py-3 rounded-2xl text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-accent/20">Play</button>
-                        </div>
-                        <div className="flex gap-4">
-                           {playlist.tracks?.slice(0, 4).map((t, idx) => (
-                             <div key={idx} className="w-16 h-16 rounded-2xl bg-gray-200 overflow-hidden shadow-sm">
-                                <img src={t.artwork} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                             </div>
-                           ))}
-                           {(playlist.tracks?.length ?? 0) === 0 && (
-                             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-400">
-                               <Music size={24} strokeWidth={1} />
-                             </div>
-                           )}
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <EmptyState icon={Music} label="No Collections Yet" />
-                  )}
-                </div>
-              ) : activeTab === 'music' ? (
+              {activeTab === 'music' ? (
                 musicPosts.length > 0 ? (
                   musicPosts.map(post => (
                     <div key={post.id}>

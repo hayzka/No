@@ -11,6 +11,7 @@ export interface User {
   isPrivateAccount: boolean;
   headerImage?: string;
   customCSS?: string;
+  selectedFont?: 'serif' | 'sans' | 'mono' | 'modern';
   following: string[];
   followers: string[];
   recentInteractions: { userId: string; timestamp: string }[]; 
@@ -20,6 +21,18 @@ export interface User {
   blockedUsers: string[];
   chatWallpapers: Record<string, string>; 
   activityLog: { id: string; type: string; detail: string; timestamp: string }[];
+  notifications: Notification[];
+}
+
+export interface Notification {
+  id: string;
+  type: 'like' | 'comment' | 'follow' | 'mention' | 'reply';
+  userId: string;
+  userName: string;
+  userPfp?: string;
+  postId?: string;
+  timestamp: string;
+  read: boolean;
 }
 
 export interface Track {

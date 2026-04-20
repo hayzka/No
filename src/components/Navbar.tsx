@@ -9,7 +9,7 @@ export default function Navbar() {
 
   const navItems = [
     { icon: Home, path: '/', label: 'Feed' },
-    { icon: Search, path: '/search', label: 'Search' },
+    { icon: Search, path: '/discover', label: 'Discover' },
     { icon: MessageCircle, path: '/chat', label: 'Chat' },
     { icon: User, path: `/profile/${user?.username}`, label: 'Profile' },
   ];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, ShieldAlert, UserMinus, Play, Pause, Download, Volume2, Youtube, Music as MusicIcon, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Bookmark, MoreHorizontal, ShieldAlert, UserMinus, Play, Pause, Download, Volume2, Youtube, Music as MusicIcon, ExternalLink, ChevronLeft, ChevronRight, Send } from 'lucide-react';
 import { Post } from '../types';
 import { formatDate, cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
@@ -45,14 +45,15 @@ const SourceIcon = ({ source }: { source?: string }) => {
 export default function PostCard({ post, isDetail }: PostCardProps) {
   const navigate = useNavigate();
   const { currentTrack, isPlaying, playTrack, togglePlay } = useMusic();
-  const { user, isGuest, updateProfile, blockUser } = useAuth();
-  const { likePost, deletePost } = usePosts();
+  const { user, isGuest, updateProfile, blockUser, savePost } = useAuth();
+  const { likePost, deletePost, reportPost } = usePosts();
   const [showMenu, setShowMenu] = useState(false);
   const [activeImageIdx, setActiveImageIdx] = useState(0);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const isCurrentPlaying = currentTrack?.id === post.music?.id;
   const hasLiked = user ? post.likes.includes(user.id) : false;
-  const isBookmarked = user ? user.bookmarks.includes(post.id) : false;
+  const isBookmarked = user ? (user.savedPosts || []).includes(post.id) : false;
   const isOwnPost = user?.id === post.userId;
 
   const handlePostClick = () => {
@@ -73,7 +74,7 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
     }
 
     if (action === 'report') {
-      alert("Post has been reported to the Path Keepers.");
+      await reportPost(post.id);
     } else if (action === 'block') {
       if (user) {
         await blockUser(post.userId);
@@ -84,22 +85,17 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
         await deletePost(post.id);
       }
     } else if (action === 'share') {
-      const shareUrl = window.location.origin + `/post/${post.id}`;
-      // Simulate nice preview by actually copying a rich text if possible or just URL
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        alert("Path link captured in local storage. Share it with the world.");
-      } catch (err) {
-        console.error("Share failed", err);
-      }
+      setShowShareModal(true);
     } else if (action === 'download') {
-      alert("Fetching data from the archive... (This mimics a download process for local assets)");
+      const url = post.music?.url || (post.images && post.images[0]);
+      if (url) {
+        window.open(url, '_blank');
+      } else {
+        alert("No downloadable content found in this frequency.");
+      }
     } else if (action === 'save') {
       if (user) {
-        const bookmarks = isBookmarked 
-          ? user.bookmarks.filter(id => id !== post.id) 
-          : [...user.bookmarks, post.id];
-        await updateProfile({ bookmarks });
+        await savePost(post.id);
       }
     }
     setShowMenu(false);
@@ -114,6 +110,71 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
       "group select-none transition-all duration-500",
       isMusicPost && !isDetail && "max-w-md mx-auto"
     )}>
+      <AnimatePresence>
+        {showShareModal && (
+          <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-0 sm:p-4">
+             <motion.div 
+               initial={{ opacity: 0 }}
+               animate={{ opacity: 1 }}
+               exit={{ opacity: 0 }}
+               onClick={() => setShowShareModal(false)}
+               className="absolute inset-0 bg-black/80 backdrop-blur-md"
+             />
+             <motion.div 
+               initial={{ y: "100%" }}
+               animate={{ y: 0 }}
+               exit={{ y: "100%" }}
+               transition={{ type: "spring", damping: 25, stiffness: 200 }}
+               className="relative w-full max-w-xl bg-white dark:bg-[#0f0f0f] rounded-t-[3rem] sm:rounded-[3rem] p-10 shadow-huge border-t sm:border border-black/5 dark:border-white/10"
+             >
+                <div className="w-12 h-1.5 bg-gray-200 dark:bg-white/10 rounded-full mx-auto mb-10 sm:hidden" />
+                <h3 className="font-serif-italic text-4xl mb-2 text-center">Capture Frequency.</h3>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.4em] text-center mb-12">Share your Path with the world</p>
+                
+                <div className="space-y-6">
+                   <div className="p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] border border-black/5 dark:border-white/5 flex items-center justify-between gap-6">
+                      <div className="flex-1 min-w-0">
+                         <p className="text-[8px] font-black text-accent uppercase tracking-widest mb-1">Frequency Link</p>
+                         <p className="text-[13px] font-medium truncate opacity-60">{window.location.origin}/post/{post.id}</p>
+                      </div>
+                      <button 
+                         onClick={async () => {
+                           await navigator.clipboard.writeText(window.location.origin + `/post/${post.id}`);
+                           alert("Path link captured.");
+                         }}
+                         className="px-6 py-3 bg-accent text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-lg shadow-accent/20 active:scale-95 transition-transform"
+                      >
+                         Capture
+                      </button>
+                   </div>
+
+                   <div className="grid grid-cols-2 gap-4">
+                      <button className="flex flex-col items-center gap-3 p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] hover:bg-accent/10 transition-colors">
+                         <div className="w-12 h-12 rounded-2xl bg-white dark:bg-black/20 flex items-center justify-center text-accent">
+                            <Send size={24} />
+                         </div>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Direct Message</span>
+                      </button>
+                      <button className="flex flex-col items-center gap-3 p-6 bg-gray-50 dark:bg-white/5 rounded-[2rem] hover:bg-accent/10 transition-colors">
+                         <div className="w-12 h-12 rounded-2xl bg-white dark:bg-black/20 flex items-center justify-center text-accent">
+                            <ExternalLink size={24} />
+                         </div>
+                         <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">External Path</span>
+                      </button>
+                   </div>
+                </div>
+
+                <button 
+                  onClick={() => setShowShareModal(false)}
+                  className="w-full mt-10 p-5 bg-gray-50 dark:bg-white/5 rounded-2xl text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-accent transition-colors"
+                >
+                  Close Archive
+                </button>
+             </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <header className="flex items-center justify-between mb-8 px-1">
         <div 
           onClick={(e) => { e.stopPropagation(); handleUserClick(post.user.username); }}
@@ -170,7 +231,7 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
                   <>
                     <button 
                       onClick={(e) => handleAction(e, 'report')}
-                      className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-red-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
+                      className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-orange-500 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                     >
                       <ShieldAlert size={14} />
                       Report Post
@@ -190,30 +251,61 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
                     className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-accent hover:bg-gray-50 dark:hover:bg-white/5 transition-colors"
                   >
                     <Download size={14} />
-                    Download File
+                    Download Content
                   </button>
                 )}
+                <button 
+                  onClick={(e) => handleAction(e, 'share')}
+                  className="w-full px-6 py-4 flex items-center gap-4 text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors border-t border-black/5 dark:border-white/5 mt-2"
+                >
+                  <Share2 size={14} />
+                  Share frequency
+                </button>
               </motion.div>
             )}
           </AnimatePresence>
-          
-          <button onClick={(e) => handleAction(e, 'share')} className="text-gray-300 dark:text-gray-600 hover:text-accent transition-colors">
-            <Share2 size={16} />
-          </button>
         </div>
       </header>
 
       {/* Main Content Area */}
       {isMusicPost ? (
         <div className="bg-gray-50 dark:bg-white/5 rounded-[2.5rem] p-6 mb-10 flex items-center gap-6 group/music relative overflow-hidden">
-           <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg group-hover/music:scale-[1.05] transition-transform duration-500">
+           <div 
+             className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden shadow-lg group-hover/music:scale-[1.05] transition-transform duration-500 cursor-pointer"
+             onClick={(e) => { e.stopPropagation(); if (post.music) playTrack(post.music); }}
+           >
               <img src={post.music?.artwork} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-              <button 
-                onClick={(e) => { e.stopPropagation(); if (post.music) playTrack(post.music); }}
-                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/music:opacity-100 transition-opacity"
-              >
+              <div className={cn(
+                "absolute inset-0 bg-black/40 flex items-center justify-center transition-opacity",
+                isCurrentPlaying && isPlaying ? "opacity-100" : "opacity-0 group-hover/music:opacity-100"
+              )}>
                 {isCurrentPlaying && isPlaying ? <Pause size={24} fill="white" className="text-white" /> : <Play size={24} fill="white" className="text-white ml-1" />}
-              </button>
+              </div>
+              
+              {isCurrentPlaying && isPlaying && (
+                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-end gap-1 h-6">
+                    <motion.div 
+                      animate={{ height: [8, 20, 12, 18, 8] }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-1.5 bg-white rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ height: [12, 8, 24, 10, 12] }}
+                      transition={{ duration: 0.8, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-1.5 bg-accent rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ height: [18, 12, 8, 22, 18] }}
+                      transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-1.5 bg-white rounded-full" 
+                    />
+                    <motion.div 
+                      animate={{ height: [8, 18, 14, 8, 8] }}
+                      transition={{ duration: 0.9, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-1.5 bg-white/60 rounded-full" 
+                    />
+                 </div>
+              )}
            </div>
            
            <div className="flex-1 min-w-0">
@@ -227,15 +319,13 @@ export default function PostCard({ post, isDetail }: PostCardProps) {
 
            <div className="flex flex-col gap-2">
               <button 
-                onClick={(e) => handleAction(e, 'download')}
-                className="p-3 bg-white dark:bg-white/10 rounded-full text-gray-400 hover:text-accent transition-colors shadow-sm"
+                onClick={(e) => { e.stopPropagation(); if (post.music) playTrack(post.music); }}
+                className={cn(
+                  "p-4 rounded-full shadow-lg hover:scale-110 active:scale-95 transition-all transition-colors",
+                  isCurrentPlaying ? "bg-white text-accent" : "bg-accent text-white"
+                )}
               >
-                 <Download size={16} />
-              </button>
-              <button 
-                className="p-3 bg-white dark:bg-white/10 rounded-full text-gray-400 hover:text-accent transition-colors shadow-sm"
-              >
-                 <ExternalLink size={16} />
+                  {isCurrentPlaying && isPlaying ? <Pause size={18} /> : <Play size={18} />}
               </button>
            </div>
         </div>

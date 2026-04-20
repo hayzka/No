@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '../types';
+import { User, Notification, Track, Message } from '../types';
 
 export const MOCK_USERS: User[] = [
   {
@@ -23,6 +23,7 @@ export const MOCK_USERS: User[] = [
     activityLog: [
       { id: 'act1', type: 'system', detail: 'Identity stabilized in the archive.', timestamp: new Date().toISOString() }
     ],
+    notifications: [],
   },
   {
     id: 'adnan_user',
@@ -43,18 +44,58 @@ export const MOCK_USERS: User[] = [
     blockedUsers: [],
     chatWallpapers: {},
     activityLog: [],
+    notifications: [],
+  },
+  {
+    id: 'music_bot',
+    username: 'rhythm',
+    name: 'Rhythm Engine',
+    bio: 'Curating the future of digital echoes.',
+    pfp: 'https://picsum.photos/seed/rhythm/400',
+    headerImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop',
+    themeColor: '#10b981',
+    isDarkMode: true,
+    isPrivateAccount: false,
+    following: [],
+    followers: [],
+    recentInteractions: [],
+    bookmarks: [],
+    savedPosts: [],
+    savedMessages: [],
+    blockedUsers: [],
+    chatWallpapers: {},
+    activityLog: [],
+    notifications: [],
   }
 ];
 
-export const GLOBAL_MUSIC_LIBRARY = [
-  { id: 't1', name: 'Evergreen', artist: 'Rhythms', artwork: 'https://picsum.photos/seed/music1/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { id: 't2', name: 'Neon Dreams', artist: 'Cyber', artwork: 'https://picsum.photos/seed/music2/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-  { id: 't3', name: 'Solace', artist: 'Luna', artwork: 'https://picsum.photos/seed/music3/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-  { id: 't4', name: 'Vantage', artist: 'Aria', artwork: 'https://picsum.photos/seed/music4/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-  { id: 't5', name: 'Midnight', artist: 'Echo', artwork: 'https://picsum.photos/seed/music5/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3' },
-  { id: 't6', name: 'Vignette', artist: 'Archiver', artwork: 'https://picsum.photos/seed/music6/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3' },
-  { id: 't7', name: 'Phase Shift', artist: 'Spectrum', artwork: 'https://picsum.photos/seed/music7/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3' },
-  { id: 't8', name: 'Afterlight', artist: 'Bloom', artwork: 'https://picsum.photos/seed/music8/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3' },
+export const GLOBAL_MUSIC_LIBRARY: Track[] = [
+  // Spotify / Modern
+  { id: 't1', name: 'Evergreen', artist: 'Rhythms', artwork: 'https://picsum.photos/seed/music1/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
+  { id: 't2', name: 'Neon Dreams', artist: 'Cyber', artwork: 'https://picsum.photos/seed/music2/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'spotify' },
+  { id: 't3', name: 'Solace', artist: 'Luna', artwork: 'https://picsum.photos/seed/music3/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'spotify' },
+  { id: 'm_sp1', name: 'After Hours', artist: 'The Weeknd', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
+  { id: 'm_sp2', name: 'Futue Nostalgia', artist: 'Dua Lipa', artwork: 'https://picsum.photos/seed/dua/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'spotify' },
+
+  // YouTube / Alternative
+  { id: 't4', name: 'Vantage Point', artist: 'Aria', artwork: 'https://picsum.photos/seed/music4/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
+  { id: 't5', name: 'Midnight Train', artist: 'Echo', artwork: 'https://picsum.photos/seed/music5/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3', source: 'youtube' },
+  { id: 't6', name: 'Vignette', artist: 'Archiver', artwork: 'https://picsum.photos/seed/music6/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3', source: 'youtube' },
+  { id: 'm_yt1', name: 'Lo-Fi Chill Hop', artist: 'Lofi Girl', artwork: 'https://picsum.photos/seed/lofi_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
+  { id: 'm_yt2', name: 'Synthwave Night', artist: 'Retro Wave', artwork: 'https://picsum.photos/seed/retro_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
+
+  // iTunes / Classic
+  { id: 't7', name: 'Phase Shift', artist: 'Spectrum', artwork: 'https://picsum.photos/seed/music7/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'itunes' },
+  { id: 't8', name: 'Afterlight Bloom', artist: 'Bloom', artwork: 'https://picsum.photos/seed/music8/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', source: 'itunes' },
+  { id: 't14', name: 'Imperial Sky', artist: 'Dynasty', artwork: 'https://picsum.photos/seed/music14/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-12.mp3', source: 'itunes' },
+  { id: 'm_it1', name: 'Bohemian Rhapsody', artist: 'Queen', artwork: 'https://picsum.photos/seed/queen/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'itunes' },
+  { id: 'm_it2', name: 'Imagine', artist: 'John Lennon', artwork: 'https://picsum.photos/seed/lennon/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'itunes' },
+
+  // Apple Music / Trendy
+  { id: 't15', name: 'Gravity Wells', artist: 'Orion', artwork: 'https://picsum.photos/seed/music15/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-13.mp3', source: 'apple' },
+  { id: 't16', name: 'Crystal Forest', artist: 'Zion', artwork: 'https://picsum.photos/seed/music16/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-14.mp3', source: 'apple' },
+  { id: 'm_ap1', name: 'Drivers License', artist: 'Olivia Rodrigo', artwork: 'https://picsum.photos/seed/olivia/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3', source: 'apple' },
+  { id: 'm_ap2', name: 'Kiss Me More', artist: 'Doja Cat', artwork: 'https://picsum.photos/seed/doja/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-11.mp3', source: 'apple' },
 ];
 
 interface AuthContextType {
@@ -72,6 +113,9 @@ interface AuthContextType {
   unblockUser: (targetId: string) => Promise<void>;
   addActivity: (type: string, detail: string) => Promise<void>;
   addInteraction: (userId: string) => Promise<void>;
+  addNotification: (targetUserId: string, notification: any) => Promise<void>;
+  markNotificationsRead: () => Promise<void>;
+  savePost: (postId: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -100,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         blockedUsers: u.blockedUsers || [],
         chatWallpapers: u.chatWallpapers || {},
         activityLog: u.activityLog || [],
+        notifications: u.notifications || [],
       }));
       setAllUsers(sanitized);
       
@@ -167,6 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         blockedUsers: [],
         chatWallpapers: {},
         activityLog: [],
+        notifications: [],
       };
       persistUsers([...allUsers, loggedInUser]);
     }
@@ -274,6 +320,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     addActivity('unblock', `Unblocked user ${allUsers.find(u => u.id === targetId)?.username || targetId}`);
   };
 
+  const addNotification = async (targetUserId: string, notif: any) => {
+    const newNotif = {
+      ...notif,
+      id: Date.now().toString(),
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+
+    const updatedAll = allUsers.map(u => {
+      if (u.id === targetUserId) {
+        return { ...u, notifications: [newNotif, ...(u.notifications || [])].slice(0, 50) };
+      }
+      return u;
+    });
+
+    persistUsers(updatedAll);
+    if (user?.id === targetUserId) {
+      setUser({ ...user, notifications: [newNotif, ...(user.notifications || [])].slice(0, 50) });
+    }
+  };
+
+  const markNotificationsRead = async () => {
+    if (!user) return;
+    const updated = { ...user, notifications: (user.notifications || []).map(n => ({ ...n, read: true })) };
+    setUser(updated);
+    persistUsers(allUsers.map(u => u.id === user.id ? updated : u));
+  };
+
+  const savePost = async (postId: string) => {
+    if (!user) return;
+    const hasSaved = (user.savedPosts || []).includes(postId);
+    const updatedSaved = hasSaved 
+      ? user.savedPosts.filter(id => id !== postId)
+      : [...(user.savedPosts || []), postId];
+    
+    await updateProfile({ savedPosts: updatedSaved });
+    addActivity(hasSaved ? 'unsave' : 'save', `${hasSaved ? 'Removed from' : 'Added to'} prescribed ciphers.`);
+  };
+
   const signOut = async () => {
     setUser(null);
     setIsGuest(false);
@@ -285,7 +370,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <AuthContext.Provider value={{ 
       user, loading, isGuest, allUsers, 
       signIn, continueAsGuest, signOut, updateProfile, 
-      followUser, unfollowUser, blockUser, unblockUser, addActivity, addInteraction
+      followUser, unfollowUser, blockUser, unblockUser, addActivity, addInteraction,
+      addNotification, markNotificationsRead, savePost
     }}>
       {children}
     </AuthContext.Provider>

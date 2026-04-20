@@ -18,9 +18,36 @@ const COLORS = [
 export default function Settings() {
   const { user, signOut, updateProfile, isGuest, allUsers, unblockUser } = useAuth();
   const [cssCode, setCssCode] = useState(user?.customCSS || '');
+  const [newUsername, setNewUsername] = useState(user?.username || '');
+  const [newName, setNewName] = useState(user?.name || '');
+  const [newBio, setNewBio] = useState(user?.bio || '');
+  const [newPfp, setNewPfp] = useState(user?.pfp || '');
+  const [newHeader, setNewHeader] = useState(user?.headerImage || '');
 
   const handleToggleMode = () => {
     if (user) updateProfile({ isDarkMode: !user.isDarkMode });
+  };
+
+  const handleFontSelect = (font: 'serif' | 'sans' | 'mono' | 'modern') => {
+    if (user) updateProfile({ selectedFont: font });
+  };
+
+  const handleUpdateIdentity = () => {
+    if (user) {
+      const exists = allUsers.some(u => u.username === newUsername && u.id !== user.id);
+      if (exists) {
+        alert("This username is already claimed in the archives.");
+        return;
+      }
+      updateProfile({ 
+        username: newUsername, 
+        name: newName,
+        bio: newBio,
+        pfp: newPfp,
+        headerImage: newHeader
+      });
+      alert("Identity synchronized.");
+    }
   };
 
   const handleColorSelect = (hex: string) => {
@@ -37,11 +64,11 @@ export default function Settings() {
   if (isGuest) {
     return (
       <div className="pt-12 text-center space-y-8">
-        <h1 className="font-serif-italic text-5xl tracking-tighter">Observatory.</h1>
-        <p className="text-gray-400 text-sm max-w-xs mx-auto">You are currently observing as a guest. Settings are reserved for pathfinders.</p>
+        <h1 className="font-serif-italic text-5xl tracking-tighter text-gray-900 dark:text-gray-100">Observatory.</h1>
+        <p className="text-gray-400 text-sm max-w-xs mx-auto font-sans">You are currently observing as a guest. Settings are reserved for pathfinders.</p>
         <button 
           onClick={() => window.location.href = '/'}
-          className="px-10 py-4 bg-accent text-white rounded-2xl text-[11px] font-extrabold uppercase tracking-widest shadow-xl shadow-accent/20"
+          className="px-10 py-4 bg-accent text-white rounded-2xl text-[11px] font-extrabold uppercase tracking-widest shadow-xl shadow-accent/20 font-sans"
         >
           Create Identity
         </button>
@@ -50,11 +77,87 @@ export default function Settings() {
   }
 
   return (
-    <div className="pt-12 space-y-16 pb-20">
+    <div className="pt-12 space-y-16 pb-20 font-sans">
       <header className="flex flex-col mb-4">
-        <h1 className="font-serif-italic text-5xl tracking-tighter">Settings.</h1>
+        <h1 className="font-serif-italic text-5xl tracking-tighter text-gray-900 dark:text-gray-100 italic">Settings.</h1>
         <p className="text-[11px] font-bold text-accent uppercase tracking-[0.5em] mt-3">Configure Your Path</p>
       </header>
+
+      <section className="space-y-8">
+        <div className="flex items-center gap-4">
+          <h2 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em]">Account Archetype</h2>
+          <div className="h-px bg-black/5 dark:bg-white/5 flex-1" />
+        </div>
+
+        <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6">
+           <div className="space-y-4">
+              <div className="flex gap-4 mb-4">
+                 <div className="w-16 h-16 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-black group relative">
+                    <img src={newPfp || 'https://picsum.photos/seed/placeholder/200'} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[8px] font-black text-white uppercase">Preview</div>
+                 </div>
+                 <div className="flex-1 h-16 rounded-2xl overflow-hidden border border-black/5 dark:border-white/10 bg-white dark:bg-black group relative">
+                    <img src={newHeader || 'https://picsum.photos/seed/header/800'} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-accent/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-[8px] font-black text-white uppercase">Header Preview</div>
+                 </div>
+              </div>
+
+              <div className="space-y-1.5">
+                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Archive Handle</label>
+                 <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">@</span>
+                    <input 
+                      type="text"
+                      value={newUsername}
+                      onChange={(e) => setNewUsername(e.target.value.toLowerCase().replace(/\s/g, ''))}
+                      className="w-full bg-white dark:bg-black/20 border-none rounded-2xl py-4 pl-8 pr-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                    />
+                 </div>
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Display Frequency (Name)</label>
+                 <input 
+                   type="text"
+                   value={newName}
+                   onChange={(e) => setNewName(e.target.value)}
+                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Resonance Bio</label>
+                 <textarea 
+                   value={newBio}
+                   onChange={(e) => setNewBio(e.target.value)}
+                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none h-20 resize-none"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Visual Signal URL (PFP)</label>
+                 <input 
+                   type="text"
+                   value={newPfp}
+                   onChange={(e) => setNewPfp(e.target.value)}
+                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                 />
+              </div>
+              <div className="space-y-1.5">
+                 <label className="text-[9px] font-black uppercase tracking-[0.2em] text-gray-400 px-1">Header Spectrum URL</label>
+                 <input 
+                   type="text"
+                   value={newHeader}
+                   onChange={(e) => setNewHeader(e.target.value)}
+                   className="w-full bg-white dark:bg-black/20 border-none rounded-2xl p-4 text-xs font-bold focus:ring-2 focus:ring-accent outline-none"
+                 />
+              </div>
+              <button 
+                onClick={handleUpdateIdentity}
+                className="w-full py-4 bg-accent text-white rounded-2xl text-[10px] font-extrabold uppercase tracking-widest shadow-lg shadow-accent/22"
+              >
+                Sync Identity
+              </button>
+           </div>
+        </div>
+      </section>
 
       <section className="space-y-8">
         <div className="flex items-center gap-4">
@@ -78,11 +181,9 @@ export default function Settings() {
             </span>
           </button>
 
-          <div className={cn(
-            "p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6"
-          )}>
+          <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6">
             <div className="flex items-center gap-4 text-gray-500">
-              <Palette size={20} />
+              <PaletteIcon size={20} />
               <span className="text-[13px] font-bold tracking-tight text-gray-900 dark:text-gray-100">Accent Palette</span>
             </div>
             <div className="flex flex-wrap gap-4">
@@ -99,6 +200,64 @@ export default function Settings() {
               ))}
             </div>
           </div>
+
+          <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6">
+            <div className="flex items-center gap-4 text-gray-500">
+              <Code size={20} />
+              <span className="text-[13px] font-bold tracking-tight text-gray-900 dark:text-gray-100">Typography Resonance</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {(['sans', 'serif', 'mono', 'modern'] as const).map(f => (
+                <button 
+                  key={f}
+                  onClick={() => handleFontSelect(f)}
+                  className={cn(
+                    "p-4 rounded-2xl border text-center transition-all",
+                    user?.selectedFont === f 
+                      ? "bg-accent/10 border-accent text-accent font-bold" 
+                      : "bg-white dark:bg-black/20 border-black/5 dark:border-white/5 text-gray-400 hover:text-gray-600"
+                  )}
+                >
+                  <span className={cn(
+                    "text-xs capitalize",
+                    f === 'serif' ? 'font-serif italic' : f === 'mono' ? 'font-mono' : f === 'modern' ? 'font-modern' : 'font-sans'
+                  )}>
+                    {f}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="space-y-8">
+        <div className="flex items-center gap-4">
+          <h2 className="text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.5em]">Preserved Ciphers</h2>
+          <div className="h-px bg-black/5 dark:bg-white/5 flex-1" />
+        </div>
+
+        <div className="p-8 bg-gray-50 dark:bg-[#1a1a1a] rounded-[2rem] border border-black/5 dark:border-white/5 space-y-6">
+           {user?.savedMessages && user.savedMessages.length > 0 ? (
+             <div className="space-y-4">
+                {user.savedMessages.map(msg => (
+                  <div key={msg.id} className="p-6 bg-white dark:bg-white/5 rounded-[1.8rem] border border-black/5 dark:border-white/10">
+                     <p className="text-[13px] leading-relaxed mb-4">{msg.text}</p>
+                     <div className="flex items-center justify-between">
+                        <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Saved Transmission</span>
+                        <a 
+                          href={`/chat?user=${allUsers.find(u => u.id === msg.senderId)?.username}`}
+                          className="text-[9px] text-accent font-black uppercase tracking-widest"
+                        >
+                          Jump to Signal
+                        </a>
+                     </div>
+                  </div>
+                ))}
+             </div>
+           ) : (
+             <p className="text-[10px] text-gray-400 uppercase tracking-widest text-center py-4">No ciphers preserved yet.</p>
+           )}
         </div>
       </section>
 
