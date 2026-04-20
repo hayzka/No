@@ -6,56 +6,10 @@ export const MOCK_USERS: User[] = [
     id: 'zain_dev',
     username: 'zain',
     name: 'Zain',
-    bio: 'The Architect of AmonsPath. Finding beauty in the digital noise.',
-    pfp: 'https://picsum.photos/seed/zain/400',
+    bio: 'The Developer of AmonsPath.',
+    pfp: 'https://share.google/HBKMyI3cIf8QFewZs',
     headerImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop',
     themeColor: '#6366f1',
-    isDarkMode: true,
-    isPrivateAccount: false,
-    following: ['adnan_user'],
-    followers: [],
-    recentInteractions: [{ userId: 'adnan_user', timestamp: new Date().toISOString() }],
-    bookmarks: [],
-    savedPosts: [],
-    savedMessages: [],
-    blockedUsers: [],
-    chatWallpapers: {},
-    fontSize: 15,
-    activityLog: [
-      { id: 'act1', type: 'system', detail: 'Identity stabilized in the archive.', timestamp: new Date().toISOString() }
-    ],
-    notifications: [],
-  },
-  {
-    id: 'adnan_user',
-    username: 'adnan',
-    name: 'Adnan',
-    bio: 'Archiving every rhythm. Catching echoes.',
-    pfp: 'https://picsum.photos/seed/adnan/400',
-    headerImage: 'https://images.unsplash.com/photo-1557683316-973673baf926?q=80&w=2029&auto=format&fit=crop',
-    themeColor: '#ec4899',
-    isDarkMode: false,
-    isPrivateAccount: false,
-    following: [],
-    followers: ['zain_dev'],
-    recentInteractions: [{ userId: 'zain_dev', timestamp: new Date().toISOString() }],
-    bookmarks: [],
-    savedPosts: [],
-    savedMessages: [],
-    blockedUsers: [],
-    chatWallpapers: {},
-    fontSize: 15,
-    activityLog: [],
-    notifications: [],
-  },
-  {
-    id: 'music_bot',
-    username: 'rhythm',
-    name: 'Rhythm Engine',
-    bio: 'Curating the future of digital echoes.',
-    pfp: 'https://picsum.photos/seed/rhythm/400',
-    headerImage: 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2070&auto=format&fit=crop',
-    themeColor: '#10b981',
     isDarkMode: true,
     isPrivateAccount: false,
     following: [],
@@ -67,32 +21,13 @@ export const MOCK_USERS: User[] = [
     blockedUsers: [],
     chatWallpapers: {},
     fontSize: 15,
-    activityLog: [],
+    activityLog: [
+      { id: 'act1', type: 'system', detail: 'Identity stabilized in the archive.', timestamp: new Date().toISOString() }
+    ],
     notifications: [],
   }
 ];
 
-export const GLOBAL_MUSIC_LIBRARY: Track[] = [
-  // Pop / Modern
-  { id: 'm_ap1', name: 'good 4 u', artist: 'Olivia Rodrigo', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/66/69/ab/6669abaa-6d63-7186-0744-8822005e5572/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/66/69/ab/6669abaa-6d63-7186-0744-8822005e5572/mzaf_13410.m4a', source: 'spotify' },
-  { id: 'm_sp1', name: 'Blinding Lights', artist: 'The Weeknd', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/20UMGIM13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/91/9d/98/919d98ce-6d63-7186-0744-8822005e5572/mzaf_13410.m4a', source: 'spotify' },
-  { id: 'm_ap2', name: 'Kiss Me More', artist: 'Doja Cat', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/2c/31/39/2c313936-a579-9945-8422-005e55722020/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/2c/31/39/2c313936-a579-9945-8422-005e55722020/mzaf_13410.m4a', source: 'apple' },
-  { id: 'm_ap3', name: 'Stay', artist: 'The Kid LAROI', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/6c/2d/19/6c2d1948-4e8c-8a9d-16f5-cd28c5a93540/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/6c/2d/19/6c2d1948-4e8c-8a9d-16f5-cd28c5a93540/mzaf_13410.m4a', source: 'itunes' },
-  { id: 'm_ap4', name: 'Montero', artist: 'Lil Nas X', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/05/20/7a/05207ae4-8d96-0371-d8a4-0e7741d408eb/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music114/v4/05/20/7a/05207ae4-8d96-0371-d8a4-0e7741d408eb/mzaf_13410.m4a', source: 'spotify' },
-  
-  // YouTube / Lo-Fi
-  { id: 'm_yt1', name: 'lofi hip hop radio', artist: 'Lofi Girl', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music114/v4/e1/e1/e1/e1e1e1e1-e1e1-e1e1-e1e1-e1e1e1e1e1e1/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'youtube' },
-  { id: 'm_yt2', name: 'Synthwave Night', artist: 'Retro Wave', artwork: 'https://picsum.photos/seed/retro_yt/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', source: 'youtube' },
-
-  // Classics
-  { id: 'm_it1', name: 'Bohemian Rhapsody', artist: 'Queen', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/c6/c6/c6/c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/c6/c6/c6/c6c6c6c6-c6c6-c6c6-c6c6-c6c6c6c6c6c6/mzaf_13410.m4a', source: 'itunes' },
-  { id: 'm_it2', name: 'Imagine', artist: 'John Lennon', artwork: 'https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/d6/d6/d6/d6d6d6d6-d6d6-d6d6-d6d6-d6d6d6d6d6d6/mzaf_13410.rgb.jpg/600x600bf.png', url: 'https://p.ocean.itunes.apple.com/apple-assets-us-std-000001/Music115/v4/d6/d6/d6/d6d6d6d6-d6d6-d6d6-d6d6-d6d6d6d6d6d6/mzaf_13410.m4a', source: 'itunes' },
-
-  // Path Originals
-  { id: 't1', name: 'Evergreen', artist: 'Rhythms', artwork: 'https://picsum.photos/seed/music1/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', source: 'spotify' },
-  { id: 't2', name: 'Neon Dreams', artist: 'Cyber', artwork: 'https://picsum.photos/seed/music2/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', source: 'spotify' },
-  { id: 't3', name: 'Solace', artist: 'Luna', artwork: 'https://picsum.photos/seed/music3/400', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3', source: 'spotify' },
-];
 
 interface AuthContextType {
   user: User | null;
